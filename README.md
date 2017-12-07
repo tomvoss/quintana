@@ -24,3 +24,8 @@ Be sure to use read-only keys from the corresponding exchanges.
 ```
 yarn start
 ```
+
+## By default Quintana will listen on port 3000 and your balances will be available at /balance:
+```
+http://127.0.0.1:3000/balance
+```
