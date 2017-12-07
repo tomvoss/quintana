@@ -20,6 +20,11 @@ Be sure to use read-only keys from the corresponding exchanges.
 }
 ```
 
+## To install the required dependencies:
+```
+yarn install
+```
+
 ## To launch quintana:
 ```
 yarn start
