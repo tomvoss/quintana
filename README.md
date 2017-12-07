@@ -36,5 +36,5 @@ http://127.0.0.1:3000/balance
 ```
 
 ## Useful? Consider a small donation:
-![Donate Bitcoin](https://raw.githubusercontent.com/tomvoss/quintana/master/public/donate.png)
+![Donate Bitcoin](public/donate.png =250x)
 1KyBiF7mCCJYMSymdPMf8upLkyvoC9kVD7
