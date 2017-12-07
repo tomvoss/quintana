@@ -1,5 +1,6 @@
 # Quintana
-Monitor cryptocurrency balances across multiple exchanges
+### Monitor cryptocurrency balances across multiple exchanges
+Note: This initial commit has not been cleaned up and contains a lot of commented out code. It should work out-of-box for Poloniex once you get your keys put in the .env file.
 
 ## To get started you'll need to create a .env file like the following:
 ```
