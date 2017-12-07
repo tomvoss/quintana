@@ -36,5 +36,5 @@ http://127.0.0.1:3000/balance
 ```
 
 ## Useful? Consider a small donation:
-![Donate Bitcoin](public/donate.png =250x)
+<img src="public/donate.png" width="250" title="Donate Bitcoin">
 1KyBiF7mCCJYMSymdPMf8upLkyvoC9kVD7
