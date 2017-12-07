@@ -1,4 +1,5 @@
 # Quintana
+Monitor cryptocurrency balances across multiple exchanges
 
 ## To get started you'll need to create a .env file like the following:
 ```
