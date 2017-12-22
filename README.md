@@ -1,4 +1,6 @@
 # Quintana
+### Monitor cryptocurrency balances across multiple exchanges
+Note: This initial commit has not been cleaned up and contains a lot of commented out code. It should work out-of-box for Poloniex once you get your keys put in the .env file.
 
 ## To get started you'll need to create a .env file like the following:
 ```
@@ -36,5 +38,5 @@ http://127.0.0.1:3000/balance
 ```
 
 ## Useful? Consider a small donation:
-![Donate Bitcoin](https://raw.githubusercontent.com/tomvoss/quintana/master/public/donate.png)
+<img src="public/donate.png" width="340" title="Donate Bitcoin">
 1KyBiF7mCCJYMSymdPMf8upLkyvoC9kVD7
