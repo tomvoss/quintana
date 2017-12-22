@@ -218,6 +218,7 @@ export default function balance( req, res ) {
             // };
             // let KrakenTradeBalance = results.KrakenTradeBalance;
             response.poloniex = {};
+            response.binance = {};
             let PoloniexTicker = results.PoloniexTicker;
             let PoloniexBalances = results.PoloniexBalances;
             let BinanceBalances = results.BinanceBalances;
@@ -245,7 +246,25 @@ export default function balance( req, res ) {
             // }
 
             response.bittrex = BittrexBalances.result;
-            response.binance = BinanceBalances;
+
+            //response.binance = BinanceBalances;
+            for ( let ticker in BinanceBalances ) {
+                let available = new BigNumber( BinanceBalances[ticker].available );
+                let onOrder = new BigNumber( BinanceBalances[ticker].onOrder );
+                let total = available.plus( onOrder );
+
+                if ( ! total.equals( 0 ) ) {
+                    response.binance[ticker] = {
+                        balance: {
+                            available: available.round( 8 ),
+                            onOrders: onOrder.round( 8 ),
+                            total: total.round( 8 ),
+                            btcValue: null,
+                            usdValue: null,
+                        }
+                    };
+                }
+            }
 
             for ( let ticker in PoloniexBalances ) {
                 let balance = PoloniexBalances[ticker];
@@ -255,7 +274,7 @@ export default function balance( req, res ) {
                     let available = new BigNumber( balance.available );
                     let onOrders = new BigNumber( balance.onOrders );
                     let total = available.plus( onOrders );
-                    console.log( PoloniexTicker );
+                    //console.log( PoloniexTicker );
                     let last = PoloniexTicker['USDT_' + ticker] ? new BigNumber( PoloniexTicker['USDT_' + ticker].last ) : null;
                     let usdValue = btcValue.times( poloniexBTCUSD );
                     poloniexUsdValue = poloniexUsdValue.plus( usdValue );
