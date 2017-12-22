@@ -10,6 +10,8 @@ BITTREX_KEY=
 BITTREX_SECRET=
 KRAKEN_KEY=
 KRAKEN_SECRET=
+BINANCE_KEY=
+BINANCE_SECRET=
 ```
 Be sure to use read-only keys from the corresponding exchanges.
 
