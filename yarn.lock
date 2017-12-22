@@ -2066,6 +2066,13 @@ node-abi@^2.1.1:
   dependencies:
     semver "^5.4.1"
 
+node-binance-api@^0.2.11:
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/node-binance-api/-/node-binance-api-0.2.11.tgz#307f1db38c79fa1ddd5002f6e949a206655739c8"
+  dependencies:
+    request "^2.83.0"
+    ws "^3.2.0"
+
 node-bittrex-api@^0.7.6:
   version "0.7.6"
   resolved "https://registry.yarnpkg.com/node-bittrex-api/-/node-bittrex-api-0.7.6.tgz#d0a2b8e2b27a32f30dc08a4389340f8c43de964f"

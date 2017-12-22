@@ -19,6 +19,7 @@
     "express": "^4.16.2",
     "express-pino-logger": "^2.0.0",
     "kraken-api": "^1.0.0",
+    "node-binance-api": "^0.2.11",
     "node-bittrex-api": "^0.7.6",
     "nodemon": "^1.12.1",
     "path": "^0.12.7",

@@ -2,6 +2,7 @@ import pino from 'pino'; const log = pino();
 import KrakenAPI from 'kraken-api';
 import PoloniexAPI from 'poloniex-api-node';
 import BittrexAPI from 'node-bittrex-api';
+import BinanceAPI from 'node-binance-api';
 import parallel from 'async/parallel';
 import BigNumber from 'bignumber.js';
 
@@ -20,6 +21,11 @@ export default function balance( req, res ) {
         'apikey': process.env.BITTREX_KEY,
         'apisecret': process.env.BITTREX_SECRET,
     });
+    const binance = BinanceAPI;
+    binance.options({
+        'APIKEY': process.env.BINANCE_KEY,
+        'APISECRET': process.env.BINANCE_SECRET,
+    })
 
     let taskError = {};
 
@@ -160,7 +166,25 @@ export default function balance( req, res ) {
                 log.error( taskError );
                 done( taskError );
             });
-        }/*,
+        },
+
+        BinanceBalances( done ) {
+            binance.balance( ( balances ) => {
+                done( null, balances );
+            });
+
+            // binance.balance()
+            // .then( ( balances ) => {
+            //     done( null, balances );
+            // })
+            // .catch( ( err ) => {
+            //     taskError.taskName = "BinanceBalances";
+            //     taskError.msg = err.message;
+            //     taskError.error = err;
+            //     log.error( taskError );
+            //     done( taskError );
+            // });
+        },
 
         BittrexBalances( done ) {
             bittrex.getbalances( ( bittrexBalances, err ) => {
@@ -171,10 +195,10 @@ export default function balance( req, res ) {
                     log.error( taskError );
                     done( taskError );
                 } else {
-                    done( bittrexBalances );
+                    done( null, bittrexBalances );
                 }
             });
-        }*/
+        }
     }, ( err, results ) => {
         if ( err ) {
             res.json( err );
@@ -196,7 +220,8 @@ export default function balance( req, res ) {
             response.poloniex = {};
             let PoloniexTicker = results.PoloniexTicker;
             let PoloniexBalances = results.PoloniexBalances;
-            //let BittrexBalances = results.BittrexBalances;
+            let BinanceBalances = results.BinanceBalances;
+            let BittrexBalances = results.BittrexBalances;
             // let krakenBTCUSD = new BigNumber( KrakenTickerBTCUSD.BTC.last );
             // let krakenXRPUSD = new BigNumber( KrakenTickerXRPUSD.XRP.last );
             let poloniexBTCUSD = PoloniexTicker.USDT_BTC ? new BigNumber( PoloniexTicker.USDT_BTC.last ) : null;
@@ -218,6 +243,9 @@ export default function balance( req, res ) {
             //     response.kraken.usdValue = krakenEquivalentBalance.round( 2 );
             //     totalUsdValue = totalUsdValue.plus( krakenEquivalentBalance );
             // }
+
+            response.bittrex = BittrexBalances.result;
+            response.binance = BinanceBalances;
 
             for ( let ticker in PoloniexBalances ) {
                 let balance = PoloniexBalances[ticker];
@@ -253,8 +281,6 @@ export default function balance( req, res ) {
             }
 
             response.poloniex.usdValue = poloniexUsdValue.round( 2 );
-
-            //response.bittrex = BittrexBalances;
 
             response.totalUsdValue = totalUsdValue.round( 2 );
 
