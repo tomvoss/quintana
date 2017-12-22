@@ -219,6 +219,7 @@ export default function balance( req, res ) {
             // let KrakenTradeBalance = results.KrakenTradeBalance;
             response.poloniex = {};
             response.binance = {};
+            response.bittrex = {};
             let PoloniexTicker = results.PoloniexTicker;
             let PoloniexBalances = results.PoloniexBalances;
             let BinanceBalances = results.BinanceBalances;
@@ -245,9 +246,25 @@ export default function balance( req, res ) {
             //     totalUsdValue = totalUsdValue.plus( krakenEquivalentBalance );
             // }
 
-            response.bittrex = BittrexBalances.result;
+            for ( let tickerObject of BittrexBalances.result ) {
+                let ticker = tickerObject.Currency;
+                let balance = new BigNumber( tickerObject.Balance );
+                let available = new BigNumber( tickerObject.Available );
+                let pending = new BigNumber( tickerObject.Pending );
 
-            //response.binance = BinanceBalances;
+                if ( ! balance.equals( 0 ) ) {
+                    response.bittrex[ticker] = {
+                        balance: {
+                            available: available.round( 8 ),
+                            onOrders: balance.minus( available ).round( 8 ),
+                            total: balance.round( 8 ),
+                            btcValue: null,
+                            usdValue: null,
+                        }
+                    }
+                }
+            }
+
             for ( let ticker in BinanceBalances ) {
                 let available = new BigNumber( BinanceBalances[ticker].available );
                 let onOrder = new BigNumber( BinanceBalances[ticker].onOrder );
