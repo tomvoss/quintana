@@ -249,9 +249,9 @@ export default function balance( req, res ) {
             // let krakenBTCUSD = new BigNumber( KrakenTickerBTCUSD.BTC.last );
             // let krakenXRPUSD = new BigNumber( KrakenTickerXRPUSD.XRP.last );
             let poloniexBTCUSD = PoloniexTicker.USDT_BTC ? new BigNumber( PoloniexTicker.USDT_BTC.last ) : null;
-            let poloniexUsdValue = new BigNumber( 0 );
             //let bittrexBTCUSD = BittrexTicker.BTCUSDT ? new BigNumber( BittrexTicker.BTCUSDT ) : new BigNumber( 0 );
             let binanceBTCUSD = BinanceTicker.BTCUSDT ? new BigNumber( BinanceTicker.BTCUSDT ) : null;
+            let subtotal = new BigNumber( 0 );
             let totalUsdValue = new BigNumber( 0 );
             // let krakenEquivalentBalance = new BigNumber( KrakenTradeBalance.result.eb );
 
@@ -281,6 +281,7 @@ export default function balance( req, res ) {
                 }
             }
 
+            subtotal = new BigNumber( 0 );
             for ( let tickerObject of BittrexBalances.result ) {
                 let ticker = tickerObject.Currency;
                 let balance = new BigNumber( tickerObject.Balance );
@@ -291,6 +292,7 @@ export default function balance( req, res ) {
                 let usdValue = btcValue.times( bittrexBTCUSD );
 
                 if ( ! balance.equals( 0 ) ) {
+                    subtotal = subtotal.plus( usdValue );
                     totalUsdValue = totalUsdValue.plus( usdValue );
 
                     response.bittrex[ticker] = {
@@ -305,6 +307,10 @@ export default function balance( req, res ) {
                 }
             }
 
+            response.bittrex.usdValue = subtotal.round( 2 );
+
+
+            subtotal = new BigNumber( 0 );
             for ( let ticker in BinanceBalances ) {
                 let available = new BigNumber( BinanceBalances[ticker].available );
                 let onOrder = new BigNumber( BinanceBalances[ticker].onOrder );
@@ -314,6 +320,7 @@ export default function balance( req, res ) {
                 let usdValue = btcValue.times( binanceBTCUSD );
 
                 if ( ! total.equals( 0 ) ) {
+                    subtotal = subtotal.plus( usdValue );
                     totalUsdValue = totalUsdValue.plus( usdValue );
 
                     response.binance[ticker] = {
@@ -328,6 +335,10 @@ export default function balance( req, res ) {
                 }
             }
 
+            response.binance.usdValue = subtotal.round( 2 );
+
+
+            subtotal = new BigNumber( 0 );
             for ( let ticker in PoloniexBalances ) {
                 let balance = PoloniexBalances[ticker];
                 let btcValue = new BigNumber( balance.btcValue );
@@ -339,7 +350,7 @@ export default function balance( req, res ) {
                     //console.log( PoloniexTicker );
                     let last = PoloniexTicker['USDT_' + ticker] ? new BigNumber( PoloniexTicker['USDT_' + ticker].last ) : null;
                     let usdValue = btcValue.times( poloniexBTCUSD );
-                    poloniexUsdValue = poloniexUsdValue.plus( usdValue );
+                    subtotal = subtotal.plus( usdValue );
 
                     totalUsdValue = totalUsdValue.plus( usdValue );
 
@@ -361,8 +372,7 @@ export default function balance( req, res ) {
                 }
             }
 
-            response.poloniex.usdValue = poloniexUsdValue.round( 2 );
-
+            response.poloniex.usdValue = subtotal.round( 2 );
             response.totalUsdValue = totalUsdValue.round( 2 );
 
             res.json( response );
