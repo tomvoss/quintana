@@ -127,10 +127,10 @@ export default function balance( req, res ) {
             // done( null, {result:{eb:0}} );
         },
 
-        /*
+        
         BinanceTicker( done ) {
             binance.prices( ( tickers ) => {
-                console.log( tickers );
+                // console.log( tickers );
                 done( null, tickers );
             });
         },
@@ -152,7 +152,7 @@ export default function balance( req, res ) {
             //     done( taskError );
             // });
         },
-        */
+        
 
         BittrexTicker( done ) {
             bittrex.getmarketsummaries( ( bittrexMarketSummaries, err ) => {
@@ -185,8 +185,8 @@ export default function balance( req, res ) {
         if ( err ) {
             res.json( err );
         } else {
-            let response = {};
-            response.kraken = {};
+            let response = {summary:{},exchanges:{}};
+            response.exchanges.kraken = {};
             let KrakenBalances = results.KrakenBalances;
             let KrakenTickerBTCUSD = results.KrakenTickerBTCUSD;
             let KrakenTickerXRPUSD = results.KrakenTickerXRPUSD;
@@ -199,8 +199,8 @@ export default function balance( req, res ) {
                 },
             };
             let KrakenTradeBalance = results.KrakenTradeBalance;
-            response.binance = {};
-            response.bittrex = {};
+            response.exchanges.binance = {};
+            response.exchanges.bittrex = {};
             let BittrexTicker = results.BittrexTicker.result;
             let BinanceTicker = results.BinanceTicker;
             let BinanceBalances = results.BinanceBalances;
@@ -208,23 +208,23 @@ export default function balance( req, res ) {
             let krakenBTCUSD = new BigNumber( KrakenTickerBTCUSD.BTC.last );
             let krakenXRPUSD = new BigNumber( KrakenTickerXRPUSD.XRP.last );
             //let bittrexBTCUSD = BittrexTicker.BTCUSDT ? new BigNumber( BittrexTicker.BTCUSDT ) : new BigNumber( 0 );
-            //let binanceBTCUSD = BinanceTicker.BTCUSDT ? new BigNumber( BinanceTicker.BTCUSDT ) : new BigNumber( -1 );
+            let binanceBTCUSD = BinanceTicker.BTCUSDT ? new BigNumber( BinanceTicker.BTCUSDT ) : new BigNumber( -1 );
             let subtotal = new BigNumber( 0 );
             let totalUsdValue = new BigNumber( 0 );
             let krakenEquivalentBalance = new BigNumber( KrakenTradeBalance.result.eb );
 
-            response.kraken = KrakenBalances;
-            if ( response.kraken.BTC ) {
-                response.kraken.BTC.last = krakenBTCUSD.round( 2 );
-                response.kraken.BTC.balance.usdValue = krakenBTCUSD.times( response.kraken.BTC.balance.total ).round( 2 );
+            response.exchanges.kraken = KrakenBalances;
+            if ( response.exchanges.kraken.BTC ) {
+                response.exchanges.kraken.BTC.last = krakenBTCUSD.round( 2 );
+                response.exchanges.kraken.BTC.balance.usdValue = krakenBTCUSD.times( response.exchanges.kraken.BTC.balance.total ).round( 2 );
             }
-            if ( response.kraken.XRP ) {
-                response.kraken.XRP.last = krakenXRPUSD.round( 5 );
-                response.kraken.XRP.balance.usdValue = krakenXRPUSD.times( response.kraken.XRP.balance.total ).round( 2 );
+            if ( response.exchanges.kraken.XRP ) {
+                response.exchanges.kraken.XRP.last = krakenXRPUSD.round( 5 );
+                response.exchanges.kraken.XRP.balance.usdValue = krakenXRPUSD.times( response.exchanges.kraken.XRP.balance.total ).round( 2 );
             }
             
             if ( ! krakenEquivalentBalance.equals( 0 ) ) {
-                response.kraken.usdValue = krakenEquivalentBalance.round( 2 );
+                response.exchanges.kraken.usdValue = krakenEquivalentBalance.round( 2 );
                 totalUsdValue = totalUsdValue.plus( krakenEquivalentBalance );
             }
 
@@ -253,7 +253,7 @@ export default function balance( req, res ) {
                     subtotal = subtotal.plus( usdValue );
                     totalUsdValue = totalUsdValue.plus( usdValue );
 
-                    response.bittrex[ticker] = {
+                    response.exchanges.bittrex[ticker] = {
                         balance: {
                             available: available.round( 8 ),
                             onOrders: balance.minus( available ).round( 8 ),
@@ -265,10 +265,10 @@ export default function balance( req, res ) {
                 }
             }
 
-            response.bittrex.usdValue = subtotal.round( 2 );
+            response.exchanges.bittrex.usdValue = subtotal.round( 2 );
 
 
-            /*
+            
             subtotal = new BigNumber( 0 );
             for ( let ticker in BinanceBalances ) {
                 let available = new BigNumber( BinanceBalances[ticker].available );
@@ -282,7 +282,7 @@ export default function balance( req, res ) {
                     subtotal = subtotal.plus( usdValue );
                     totalUsdValue = totalUsdValue.plus( usdValue );
 
-                    response.binance[ticker] = {
+                    response.exchanges.binance[ticker] = {
                         balance: {
                             available: available.round( 8 ),
                             onOrders: onOrder.round( 8 ),
@@ -294,11 +294,11 @@ export default function balance( req, res ) {
                 }
             }
 
-            response.binance.usdValue = subtotal.round( 2 );
-            */
+            response.exchanges.binance.usdValue = subtotal.round( 2 );
+            
 
 
-            response.totalUsdValue = totalUsdValue.round( 2 );
+            response.summary.totalUsdValue = totalUsdValue.round( 2 );
 
             res.json( response );
         }
