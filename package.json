@@ -23,8 +23,7 @@
     "node-bittrex-api": "^0.7.6",
     "nodemon": "^1.12.1",
     "path": "^0.12.7",
-    "pino": "^4.9.0",
-    "poloniex-api-node": "^1.6.3"
+    "pino": "^4.9.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.1",
