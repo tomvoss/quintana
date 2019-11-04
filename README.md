@@ -41,4 +41,4 @@ http://127.0.0.1:3000/balance
 
 ## Useful? Consider a small donation:
 <img src="public/donate.png" width="340" title="Donate Bitcoin">
-1KyBiF7mCCJYMSymdPMf8upLkyvoC9kVD7
+3KCLszmFD5vscc844uzjuvPtiByugEGKtf
