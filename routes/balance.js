@@ -163,9 +163,10 @@ export default function balance( req, res ) {
 
         BinanceBalances( done ) {
             try {
-                binance.balance( ( balances ) => {
-                    done( null, balances );
-                });
+                // binance.balance( ( balances ) => {
+                //     done( null, balances );
+                // });
+                done( null, null );
             } catch ( e ) {
                 log.error( e );
                 done( e, null );
