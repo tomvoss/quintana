@@ -47,6 +47,12 @@ export default function balance( req, res ) {
                             case "XLTC":
                                 ticker = "LTC";
                                 break;
+                            case "ADA":
+                                ticker = "ADA";
+                                break;
+                            case "ICX":
+                                ticker = "ICX";
+                                break;
                         }
 
                         response[ticker] = {
@@ -138,6 +144,52 @@ export default function balance( req, res ) {
             // done( null, {LTC:{last:0}} );
         },
 
+        KrakenTickerADAUSD( done ) {
+            kraken.api( 'Ticker', { pair: 'ADAUSD' } )
+            .then( ( tickers ) => {
+                let response = {};
+
+                response = {
+                    ADA: {
+                        last: tickers.result.ADAUSD.c[0],
+                    },
+                };
+
+                done( null, response );
+            })
+            .catch ( ( err ) => {
+                taskError.taskName = "KrakenTickerADAUSD";
+                taskError.msg = err.message;
+                taskError.error = err;
+                log.error( taskError );
+                done( taskError );
+            });
+            // done( null, {ADA:{last:0}} );
+        },
+
+        KrakenTickerICXUSD( done ) {
+            kraken.api( 'Ticker', { pair: 'ICXUSD' } )
+            .then( ( tickers ) => {
+                let response = {};
+
+                response = {
+                    ICX: {
+                        last: tickers.result.ICXUSD.c[0],
+                    },
+                };
+
+                done( null, response );
+            })
+            .catch ( ( err ) => {
+                taskError.taskName = "KrakenTickerICXUSD";
+                taskError.msg = err.message;
+                taskError.error = err;
+                log.error( taskError );
+                done( taskError );
+            });
+            // done( null, {ICX:{last:0}} );
+        },
+
         KrakenTradeBalance( done ) {
             kraken.api( 'TradeBalance' )
             .then( ( tradeBalance ) => {
@@ -163,10 +215,10 @@ export default function balance( req, res ) {
 
         BinanceBalances( done ) {
             try {
-                // binance.balance( ( balances ) => {
-                //     done( null, balances );
-                // });
-                done( null, null );
+                binance.balance( ( balances ) => {
+                    done( null, balances );
+                });
+                //done( null, null );
             } catch ( e ) {
                 log.error( e );
                 done( e, null );
@@ -223,6 +275,8 @@ export default function balance( req, res ) {
             let KrakenTickerBTCUSD = results.KrakenTickerBTCUSD;
             let KrakenTickerXRPUSD = results.KrakenTickerXRPUSD;
             let KrakenTickerLTCUSD = results.KrakenTickerLTCUSD;
+            let KrakenTickerADAUSD = results.KrakenTickerADAUSD;
+            let KrakenTickerICXUSD = results.KrakenTickerICXUSD;
             let KrakenTickers = {
                 BTC: {
                     last: KrakenTickerBTCUSD.BTC.last,
@@ -232,7 +286,13 @@ export default function balance( req, res ) {
                 },
                 LTC: {
                     last: KrakenTickerLTCUSD.LTC.last,
-                }
+                },
+                ADA: {
+                    last: KrakenTickerADAUSD.ADA.last,
+                },
+                ICX: {
+                    last: KrakenTickerICXUSD.ICX.last,
+                },
             };
             let KrakenTradeBalance = results.KrakenTradeBalance;
             response.exchanges.binance = {};
@@ -244,6 +304,8 @@ export default function balance( req, res ) {
             let krakenBTCUSD = new BigNumber( KrakenTickerBTCUSD.BTC.last );
             let krakenXRPUSD = new BigNumber( KrakenTickerXRPUSD.XRP.last );
             let krakenLTCUSD = new BigNumber( KrakenTickerLTCUSD.LTC.last );
+            let krakenADAUSD = new BigNumber( KrakenTickerADAUSD.ADA.last );
+            let krakenICXUSD = new BigNumber( KrakenTickerICXUSD.ICX.last );
             //let bittrexBTCUSD = BittrexTicker.BTCUSDT ? new BigNumber( BittrexTicker.BTCUSDT ) : new BigNumber( 0 );
             let binanceBTCUSD = BinanceTicker.BTCUSDT ? new BigNumber( BinanceTicker.BTCUSDT ) : new BigNumber( -1 );
             let subtotal = new BigNumber( 0 );
@@ -262,6 +324,14 @@ export default function balance( req, res ) {
             if ( response.exchanges.kraken.LTC ) {
                 response.exchanges.kraken.LTC.last = krakenLTCUSD.round( 5 );
                 response.exchanges.kraken.LTC.balance.usdValue = krakenLTCUSD.times( response.exchanges.kraken.LTC.balance.total ).round( 2 );
+            }
+            if ( response.exchanges.kraken.ADA ) {
+                response.exchanges.kraken.ADA.last = krakenADAUSD.round( 5 );
+                response.exchanges.kraken.ADA.balance.usdValue = krakenADAUSD.times( response.exchanges.kraken.ADA.balance.total ).round( 2 );
+            }
+            if ( response.exchanges.kraken.ICX ) {
+                response.exchanges.kraken.ICX.last = krakenICXUSD.round( 5 );
+                response.exchanges.kraken.ICX.balance.usdValue = krakenICXUSD.times( response.exchanges.kraken.ICX.balance.total ).round( 2 );
             }
             
             if ( ! krakenEquivalentBalance.equals( 0 ) ) {
